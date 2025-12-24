@@ -193,45 +193,25 @@ export default function Integrations() {
 
       <ui-title-bar title="Integraciones"></ui-title-bar>
 
-      <s-block-stack gap="500">
-        <s-layout>
-          <s-layout-section variant="oneThird">
-            <s-card>
-              <s-block-stack gap="200">
-                <s-text variant="headingMd" as="h2">
-                  Configuración de Integraciones
-                </s-text>
-                <s-text variant="bodyMd" as="p" tone="subdued">
-                  Conecta tus herramientas favoritas con tu tienda. Configura las credenciales necesarias para cada integración.
-                </s-text>
-              </s-block-stack>
-            </s-card>
-          </s-layout-section>
+      <s-block-stack gap="400">
+        <s-card>
+          <s-inline-stack align="space-between" blockAlign="center">
+            <s-block-stack gap="100">
+              <s-text variant="headingMd" as="h2">
+                Clientify CRM
+              </s-text>
+              <s-text variant="bodySm" as="p" tone="subdued">
+                Sincroniza clientes, productos y pedidos con tu CRM
+              </s-text>
+            </s-block-stack>
+            {hasClientifyCredentials && (
+              <s-badge tone="success">✓ Configurado</s-badge>
+            )}
+          </s-inline-stack>
 
-          <s-layout-section>
-            {/* Clientify Integration */}
-            <s-card>
-              <s-block-stack gap="400">
-                <s-inline-stack align="space-between" blockAlign="center">
-                  <s-block-stack gap="100">
-                    <s-text variant="headingLg" as="h2">
-                      Clientify
-                    </s-text>
-                    <s-text variant="bodyMd" as="p" tone="subdued">
-                      CRM para gestión de clientes y ventas
-                    </s-text>
-                  </s-block-stack>
-                  {hasClientifyCredentials && (
-                    <s-badge tone="success">Configurado</s-badge>
-                  )}
-                </s-inline-stack>
+          <s-divider></s-divider>
 
-                <s-divider></s-divider>
-
-                <s-block-stack gap="400">
-                  <s-text variant="headingMd" as="h3">
-                    Credenciales
-                  </s-text>
+          <s-block-stack gap="300">
 
                   <s-text-field
                     label="API Key"
@@ -277,41 +257,17 @@ export default function Integrations() {
                   )}
                 </s-block-stack>
 
-                <s-divider></s-divider>
+          <s-divider></s-divider>
 
-                <s-block-stack gap="200">
-                  <s-text variant="headingMd" as="h3">
-                    Información
-                  </s-text>
-                  <s-text variant="bodyMd" as="p">
-                    Clientify es un CRM que te permite gestionar tus clientes, oportunidades de venta y campañas de marketing.
-                  </s-text>
-                  <s-inline-stack gap="200">
-                    <s-link url="https://clientify.com" target="_blank">
-                      Visitar Clientify
-                    </s-link>
-                    <s-link url="https://docs.clientify.com/api" target="_blank">
-                      Documentación API
-                    </s-link>
-                  </s-inline-stack>
-                </s-block-stack>
-              </s-block-stack>
-            </s-card>
-
-            {/* Placeholder para futuras integraciones */}
-            <s-card>
-              <s-block-stack gap="300" alignment="center">
-                <s-icon name="apps" tone="subdued"></s-icon>
-                <s-text variant="headingMd" as="h2" alignment="center">
-                  Próximamente más integraciones
-                </s-text>
-                <s-text variant="bodyMd" as="p" tone="subdued" alignment="center">
-                  Estamos trabajando para añadir más integraciones que te ayuden a potenciar tu negocio.
-                </s-text>
-              </s-block-stack>
-            </s-card>
-          </s-layout-section>
-        </s-layout>
+          <s-inline-stack gap="300">
+            <s-link url="https://clientify.com" target="_blank">
+              <s-button size="slim" variant="plain">Visitar Clientify</s-button>
+            </s-link>
+            <s-link url="https://docs.clientify.com/api" target="_blank">
+              <s-button size="slim" variant="plain">Documentación API</s-button>
+            </s-link>
+          </s-inline-stack>
+        </s-card>
       </s-block-stack>
     </>
   );

@@ -1,7 +1,7 @@
-import { ClientifyService } from "./clientify.server";
-import { syncShopifyCustomerToClientifyContact } from "./sync-customer-to-clientify.server";
-import { syncShopifyLineItemsToClientifyProducts } from "./sync-products-to-clientify.server";
-import { mapShopifyOrderToClientifyDeal } from "./clientify-mapper.server";
+import { ClientifyService } from "./clientify/clientify.server";
+import { syncShopifyCustomerToClientifyContact } from "./clientify/sync-customer-to-clientify.server";
+import { syncShopifyLineItemsToClientifyProducts } from "./clientify/sync-products-to-clientify.server";
+import { mapShopifyOrderToClientifyDeal } from "./clientify/clientify-mapper.server";
 import logger from "../utils/logger.server";
 
 interface OrderSyncResult {

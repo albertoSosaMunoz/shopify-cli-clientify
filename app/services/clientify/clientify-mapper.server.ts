@@ -69,7 +69,7 @@ export function mapShopifyLineItemToClientifyProduct(lineItem: any): ClientifyPr
 export function mapShopifyOrderToClientifyDeal(
   order: any,
   contactId: number,
-  productItems: Array<{ product_id: number; quantity: number; price: number }>,
+  productItems: Array<{ product_id: number; quantity: number }>,
   ownerId?: number
 ): ClientifyDeal {
   // Solo incluir custom_fields con valores no vacíos
@@ -102,7 +102,7 @@ export function mapShopifyOrderToClientifyDeal(
     amount: parseFloat(order.total_price) || 0,
     currency: order.currency || "EUR",
     description: `Pedido Shopify #${order.order_number}\nEstado financiero: ${order.financial_status}\nEstado de envío: ${order.fulfillment_status || "pendiente"}`,
-    items: productItems,
+    products: productItems,
     custom_fields: customFields.length > 0 ? customFields : undefined,
   };
 
@@ -115,15 +115,14 @@ export function mapShopifyOrderToClientifyDeal(
 }
 
 /**
- * Convierte los line_items de un pedido a items de oportunidad con IDs de Clientify
+ * Convierte los line_items de un pedido a productos de oportunidad con IDs de Clientify
  */
 export function mapLineItemsToClientifyDealItems(
   lineItems: any[],
   clientifyProductIds: number[]
-): Array<{ product_id: number; quantity: number; price: number }> {
+): Array<{ product_id: number; quantity: number }> {
   return lineItems.map((item, index) => ({
     product_id: clientifyProductIds[index],
     quantity: item.quantity || 1,
-    price: parseFloat(item.price) || 0,
   }));
 }

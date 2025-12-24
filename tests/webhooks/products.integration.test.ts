@@ -3,8 +3,8 @@ import { mockShopifyOrder } from '../fixtures/shopify-order.mock';
 import { 
   syncShopifyLineItemToClientifyProduct,
   syncShopifyLineItemsToClientifyProducts 
-} from '../../app/services/sync-products-to-clientify.server';
-import { ClientifyService } from '../../app/services/clientify.server';
+} from '../../app/services/clientify/sync-products-to-clientify.server';
+import { ClientifyService } from '../../app/services/clientify/clientify.server';
 import db from '../../app/db.server';
 
 /**

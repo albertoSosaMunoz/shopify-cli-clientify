@@ -1,9 +1,9 @@
 import type { ActionFunctionArgs } from "react-router";
 import db from "../db.server";
 import { validateWebhookHmac } from "../utils/webhook-validator.server";
-import { syncShopifyOrderToClientify } from "../services/sync-order-to-clientify.server";
+import { syncShopifyOrderToClientify } from "../services/clientify/sync-order-to-clientify.server";
 import logger from "../utils/logger.server";
-import { createWebhookLog, markWebhookAsProcessed, markWebhookAsError } from "../services/webhook-logger.server";
+import { createWebhookLog, markWebhookAsProcessed, markWebhookAsError } from "../services/logging/webhook-logger.server";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   logger.info("🚀 WEBHOOK UPDATED - Route hit!", new Date().toISOString());
@@ -57,6 +57,28 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
     logger.info(`🔄 Received ${topic} webhook for ${shop}`);
     logger.info(`Order #${payload.order_number} - ID: ${payload.id} updated`);
+
+    // Verificar si el pedido ya fue sincronizado exitosamente como DEAL
+    const existingDealSync = await db.syncLog.findFirst({
+      where: {
+        shopId: shopRecord.id,
+        syncType: "DEAL",
+        shopifyId: payload.id.toString(),
+        status: "SUCCESS",
+        clientifyId: { not: null }
+      }
+    });
+
+    // Si no hay sincronización previa exitosa, probablemente orders/create lo está procesando ahora
+    if (!existingDealSync) {
+      logger.info(`⏭️  Order ${payload.order_number} has no previous successful DEAL sync - skipping (likely being created by orders/create webhook)`);
+      if (webhookLogId) {
+        await markWebhookAsProcessed(webhookLogId);
+      }
+      return new Response(null, { status: 200 });
+    }
+
+    logger.info(`✓ Order ${payload.order_number} was previously synced as Deal #${existingDealSync.clientifyId} - proceeding with update`);
 
     // Guardar/actualizar orden en base de datos
     await db.order.upsert({

@@ -1,5 +1,5 @@
 import { ClientifyService, type ClientifyDeal } from "./clientify.server";
-import logger from "../utils/logger.server";
+import logger from "../../utils/logger.server";
 
 /**
  * Sincroniza un deal de Shopify con una oportunidad de Clientify

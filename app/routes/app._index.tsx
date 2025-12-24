@@ -1,5 +1,5 @@
 import type { LoaderFunctionArgs } from "react-router";
-import { useLoaderData } from "react-router";
+import { useLoaderData, Link } from "react-router";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 
 import { authenticate } from "../shopify.server";
@@ -49,8 +49,11 @@ export default function Index() {
 
   return (
     <s-page>
-      <s-text slot="title" variant="headingLg" as="h1">
-        Bienvenido
+      <s-text slot="title" variant="headingMd" as="h1">
+        Bienvenido a Clientify para Shopify
+      </s-text>
+      <s-text slot="subtitle" variant="bodyMd" as="p">
+        Sincroniza automáticamente tus pedidos, clientes y productos con Clientify CRM. Tu tienda <strong>{shop}</strong> está conectada.
       </s-text>
 
       <s-layout>
@@ -58,19 +61,99 @@ export default function Index() {
           <s-card>
             <s-block-stack gap="400">
               <s-text variant="headingMd" as="h2">
-                Shopify Clientify App
-              </s-text>
-              <s-text variant="bodyMd" as="p">
-                Esta aplicación sincroniza automáticamente tus pedidos de Shopify con Clientify CRM.
+                Pasos para comenzar
               </s-text>
               <s-divider></s-divider>
-              <s-block-stack gap="200">
-                <s-text variant="headingMd" as="h3">
-                  Configuración
-                </s-text>
-                <s-text variant="bodyMd" as="p">
-                  Para empezar a usar la aplicación, ve a la sección de Integraciones y configura tu API Key de Clientify.
-                </s-text>
+              
+              <s-block-stack gap="300">
+                <s-block-stack gap="100">
+                  <s-text variant="headingSm" as="h3">
+                    1. Configura tu API Key
+                  </s-text>
+                  <s-text variant="bodyMd" as="p" tone="subdued">
+                    Ve a la sección de Integraciones y añade tu API Key de Clientify para comenzar la sincronización.
+                  </s-text>
+                  <div>
+                    <Link to="/app/integrations">
+                      <s-button>Configurar ahora</s-button>
+                    </Link>
+                  </div>
+                </s-block-stack>
+
+                <s-divider></s-divider>
+
+                <s-block-stack gap="100">
+                  <s-text variant="headingSm" as="h3">
+                    2. Sincronización automática
+                  </s-text>
+                  <s-text variant="bodyMd" as="p" tone="subdued">
+                    Los pedidos se sincronizan automáticamente. Clientes, productos y oportunidades se crean en Clientify.
+                  </s-text>
+                </s-block-stack>
+
+                <s-divider></s-divider>
+
+                <s-block-stack gap="100">
+                  <s-text variant="headingSm" as="h3">
+                    3. Monitorea el proceso
+                  </s-text>
+                  <s-text variant="bodyMd" as="p" tone="subdued">
+                    Revisa los logs de sincronización y webhooks para asegurar que todo funciona correctamente.
+                  </s-text>
+                  <div>
+                    <Link to="/app/sync-logs">
+                      <s-button variant="plain">Ver logs</s-button>
+                    </Link>
+                  </div>
+                </s-block-stack>
+              </s-block-stack>
+            </s-block-stack>
+          </s-card>
+        </s-layout-section>
+
+        <s-layout-section>
+          <s-card>
+            <s-block-stack gap="400">
+              <s-text variant="headingMd" as="h2">
+                Características principales
+              </s-text>
+              <s-divider></s-divider>
+              <s-block-stack gap="300">
+                <s-block-stack gap="100">
+                  <s-text variant="headingSm" as="h4">
+                    Sincronización de clientes
+                  </s-text>
+                  <s-text variant="bodyMd" as="p" tone="subdued">
+                    Los datos de tus clientes se transfieren automáticamente a Clientify como contactos.
+                  </s-text>
+                </s-block-stack>
+
+                <s-block-stack gap="100">
+                  <s-text variant="headingSm" as="h4">
+                    Productos actualizados
+                  </s-text>
+                  <s-text variant="bodyMd" as="p" tone="subdued">
+                    Mantén tu catálogo de productos sincronizado con precios y descripciones actuales.
+                  </s-text>
+                </s-block-stack>
+
+                <s-block-stack gap="100">
+                  <s-text variant="headingSm" as="h4">
+                    Oportunidades de venta
+                  </s-text>
+                  <s-text variant="bodyMd" as="p" tone="subdued">
+                    Cada pedido crea una oportunidad en Clientify con todos los detalles y productos.
+                  </s-text>
+                </s-block-stack>
+
+                <s-block-stack gap="100">
+                  <s-text variant="headingSm" as="h4">
+                    Logs detallados
+                  </s-text>
+                  <s-text variant="bodyMd" as="p" tone="subdued">
+                    Revisa el historial completo de sincronizaciones con datos de request y response.
+                  </s-text>
+                </s-block-stack>
               </s-block-stack>
             </s-block-stack>
           </s-card>

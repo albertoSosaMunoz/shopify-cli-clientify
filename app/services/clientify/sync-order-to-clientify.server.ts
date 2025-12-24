@@ -5,8 +5,8 @@ import {
   mapLineItemsToClientifyDealItems,
 } from "./clientify-mapper.server";
 import { syncShopifyLineItemsToClientifyProducts } from "./sync-products-to-clientify.server";
-import { logCustomerSync, logProductSync, logDealSync, logSyncError } from "./sync-logger.server";
-import logger from "../utils/logger.server";
+import { logCustomerSync, logProductSync, logDealSync, logSyncError } from "../logging/sync-logger.server";
+import logger from "../../utils/logger.server";
 
 interface SyncResult {
   success: boolean;
@@ -47,7 +47,8 @@ export async function syncShopifyOrderToClientify(
         shopId,
         order.customer.id.toString(),
         contactId,
-        contactData
+        contactData,
+        { id: contactId, ...contactData } // responseData con el ID devuelto
       );
     }
 
@@ -71,13 +72,15 @@ export async function syncShopifyOrderToClientify(
     if (shopId) {
       for (let i = 0; i < order.line_items.length; i++) {
         const lineItem = order.line_items[i];
-        const productId = syncedProducts[i]?.id;
+        const syncedProduct = syncedProducts[i];
+        const productId = syncedProduct?.id;
         if (lineItem.variant_id && productId) {
           await logProductSync(
             shopId,
             lineItem.variant_id.toString(),
             productId,
-            { sku: lineItem.sku, name: lineItem.title }
+            { sku: lineItem.sku, name: lineItem.title },
+            syncedProduct // responseData completo del producto
           );
         }
       }
@@ -96,7 +99,8 @@ export async function syncShopifyOrderToClientify(
         shopId,
         order.id.toString(),
         dealId,
-        dealData
+        dealData,
+        { id: dealId, ...dealData } // responseData con el ID devuelto
       );
     }
 

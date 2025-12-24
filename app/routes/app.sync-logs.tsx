@@ -96,46 +96,78 @@ export default function SyncLogs() {
       <s-text slot="title" variant="headingMd" as="h1">
         Historial de Sincronizaciones
       </s-text>
-      <s-text slot="subtitle" variant="bodySm" as="p">
-        {shop} - {total} registros
-      </s-text>
 
       <s-card>
-        <div style={{ padding: "12px" }}>
-          <div style={{ display: "flex", gap: "12px", marginBottom: "12px", fontSize: "13px" }}>
-            <div style={{ flex: 1 }}>
-              <strong>Total:</strong> {total}
-            </div>
-            <div style={{ flex: 1, color: "green" }}>
-              <strong>Exitosas:</strong> {totalSuccess}
-            </div>
-            <div style={{ flex: 1, color: "red" }}>
-              <strong>Errores:</strong> {totalErrors}
-            </div>
-          </div>
+        <div style={{ padding: "10px 12px", borderBottom: "1px solid #e5e7eb" }}>
+          <s-inline-stack gap="400" align="space-between" wrap={false}>
+            <s-inline-stack gap="300" blockAlign="center">
+              <s-text variant="bodySm" as="span" tone="subdued">🏪 {shop}</s-text>
+              <s-text variant="bodySm" as="span" tone="subdued">•</s-text>
+              <s-text variant="bodySm" as="span" tone="subdued">Total: <strong>{total}</strong></s-text>
+              <s-text variant="bodySm" as="span" tone="subdued">•</s-text>
+              <s-text variant="bodySm" as="span" style={{ color: "#008060" }}>Exitosos: <strong>{totalSuccess}</strong></s-text>
+              <s-text variant="bodySm" as="span" tone="subdued">•</s-text>
+              <s-text variant="bodySm" as="span" style={{ color: "#d72c0d" }}>Errores: <strong>{totalErrors}</strong></s-text>
+            </s-inline-stack>
+            <s-inline-stack gap="100" blockAlign="center">
+              <select
+                value={filters?.syncType || "all"}
+                onChange={(e) => handleFilterChange("type", e.target.value)}
+                style={{ padding: "3px 6px", fontSize: "12px", borderRadius: "4px", border: "1px solid #d1d5db" }}
+              >
+                <option value="all">Tipo</option>
+                <option value="CUSTOMER">Customer</option>
+                <option value="PRODUCT">Product</option>
+                <option value="DEAL">Deal</option>
+                <option value="ORDER">Order</option>
+              </select>
+              <select
+                value={filters?.status || "all"}
+                onChange={(e) => handleFilterChange("status", e.target.value)}
+                style={{ padding: "3px 6px", fontSize: "12px", borderRadius: "4px", border: "1px solid #d1d5db" }}
+              >
+                <option value="all">Estado</option>
+                <option value="SUCCESS">Exitoso</option>
+                <option value="ERROR">Error</option>
+              </select>
+              {totalPages > 1 && (
+                <s-inline-stack gap="100" blockAlign="center">
+                  <button
+                    disabled={page <= 1}
+                    onClick={() => handlePageChange(page - 1)}
+                    style={{
+                      padding: "3px 8px",
+                      fontSize: "12px",
+                      borderRadius: "3px",
+                      border: "1px solid #d1d5db",
+                      background: page <= 1 ? "#f3f4f6" : "white",
+                      cursor: page <= 1 ? "not-allowed" : "pointer"
+                    }}
+                  >
+                    ‹
+                  </button>
+                  <s-text variant="bodySm" as="span">{page}/{totalPages}</s-text>
+                  <button
+                    disabled={page >= totalPages}
+                    onClick={() => handlePageChange(page + 1)}
+                    style={{
+                      padding: "3px 8px",
+                      fontSize: "12px",
+                      borderRadius: "3px",
+                      border: "1px solid #d1d5db",
+                      background: page >= totalPages ? "#f3f4f6" : "white",
+                      cursor: page >= totalPages ? "not-allowed" : "pointer"
+                    }}
+                  >
+                    ›
+                  </button>
+                </s-inline-stack>
+              )}
+            </s-inline-stack>
+          </s-inline-stack>
+        </div>
 
-          <div style={{ display: "flex", gap: "8px", marginBottom: "12px" }}>
-            <select
-              value={filters?.syncType || "all"}
-              onChange={(e) => handleFilterChange("type", e.target.value)}
-              style={{ flex: 1, padding: "6px", fontSize: "13px", borderRadius: "4px", border: "1px solid #ccc" }}
-            >
-              <option value="all">Todos los tipos</option>
-              <option value="CUSTOMER">Customer</option>
-              <option value="PRODUCT">Product</option>
-              <option value="DEAL">Deal</option>
-              <option value="ORDER">Order</option>
-            </select>
-            <select
-              value={filters?.status || "all"}
-              onChange={(e) => handleFilterChange("status", e.target.value)}
-              style={{ flex: 1, padding: "6px", fontSize: "13px", borderRadius: "4px", border: "1px solid #ccc" }}
-            >
-              <option value="all">Todos</option>
-              <option value="SUCCESS">Exitoso</option>
-              <option value="ERROR">Error</option>
-            </select>
-          </div>
+        <div style={{ padding: "0" }}>
 
           <div style={{ overflowX: "auto" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}>
@@ -201,40 +233,6 @@ export default function SyncLogs() {
               </tbody>
             </table>
           </div>
-
-          {totalPages > 1 && (
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "12px", marginTop: "12px", paddingTop: "12px", borderTop: "1px solid #e0e0e0" }}>
-              <button
-                disabled={page <= 1}
-                onClick={() => handlePageChange(page - 1)}
-                style={{
-                  padding: "4px 12px",
-                  fontSize: "13px",
-                  borderRadius: "4px",
-                  border: "1px solid #ccc",
-                  background: page <= 1 ? "#f0f0f0" : "white",
-                  cursor: page <= 1 ? "not-allowed" : "pointer"
-                }}
-              >
-                ‹
-              </button>
-              <span style={{ fontSize: "13px" }}>Página {page} de {totalPages}</span>
-              <button
-                disabled={page >= totalPages}
-                onClick={() => handlePageChange(page + 1)}
-                style={{
-                  padding: "4px 12px",
-                  fontSize: "13px",
-                  borderRadius: "4px",
-                  border: "1px solid #ccc",
-                  background: page >= totalPages ? "#f0f0f0" : "white",
-                  cursor: page >= totalPages ? "not-allowed" : "pointer"
-                }}
-              >
-                ›
-              </button>
-            </div>
-          )}
         </div>
       </s-card>
 

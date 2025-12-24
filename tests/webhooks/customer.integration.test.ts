@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import { mockShopifyOrder } from '../fixtures/shopify-order.mock';
-import { syncShopifyCustomerToClientifyContact } from '../../app/services/sync-customer-to-clientify.server';
+import { syncShopifyCustomerToClientifyContact } from '../../app/services/clientify/sync-customer-to-clientify.server';
 import db from '../../app/db.server';
 
 /**

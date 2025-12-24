@@ -1,5 +1,5 @@
 import { ClientifyService, type ClientifyProduct } from "./clientify.server";
-import logger from "../utils/logger.server";
+import logger from "../../utils/logger.server";
 
 /**
  * Mapea un line_item de Shopify a un producto de Clientify

@@ -1,5 +1,5 @@
 import { ClientifyService, type ClientifyContact } from "./clientify.server";
-import logger from "../utils/logger.server";
+import logger from "../../utils/logger.server";
 
 /**
  * Mapea un customer de Shopify a un contacto de Clientify

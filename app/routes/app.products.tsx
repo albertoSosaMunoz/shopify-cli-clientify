@@ -138,10 +138,10 @@ export default function Products() {
   return (
     <s-page>
       <s-text slot="title" variant="headingLg" as="h1">
-        Products
+        Productos
       </s-text>
       <s-text slot="subtitle" variant="bodyMd" as="p">
-        View all products from your Shopify store ({products.length} products)
+        Consulta el catálogo de productos de tu tienda. Gestiona inventario, precios y descripciones desde un solo lugar.
       </s-text>
 
       {products.length === 0 ? (

@@ -1,4 +1,4 @@
-import logger from "../utils/logger.server";
+import logger from "../../utils/logger.server";
 
 const CLIENTIFY_API_URL = "https://api.clientify.net/v1";
 
@@ -41,10 +41,9 @@ interface ClientifyDeal {
   amount?: number;
   currency?: string;
   description?: string;
-  items?: Array<{
+  products?: Array<{
     product_id: number;
     quantity: number;
-    price: number;
   }>;
   custom_fields?: Array<{ field: string; value: string }>;
 }

@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import { mockShopifyOrder } from '../fixtures/shopify-order.mock';
-import { syncShopifyDealToClientify } from '../../app/services/sync-deal-to-clientify.server';
-import { syncShopifyCustomerToClientifyContact } from '../../app/services/sync-customer-to-clientify.server';
-import { mapShopifyOrderToClientifyDeal } from '../../app/services/clientify-mapper.server';
-import { ClientifyService } from '../../app/services/clientify.server';
+import { syncShopifyDealToClientify } from '../../app/services/clientify/sync-deal-to-clientify.server';
+import { syncShopifyCustomerToClientifyContact } from '../../app/services/clientify/sync-customer-to-clientify.server';
+import { mapShopifyOrderToClientifyDeal } from '../../app/services/clientify/clientify-mapper.server';
+import { ClientifyService } from '../../app/services/clientify/clientify.server';
 import db from '../../app/db.server';
 
 /**

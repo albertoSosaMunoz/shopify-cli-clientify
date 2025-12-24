@@ -1,9 +1,9 @@
 import type { ActionFunctionArgs } from "react-router";
 import db from "../db.server";
 import { validateWebhookHmac } from "../utils/webhook-validator.server";
-import { syncShopifyOrderToClientify } from "../services/sync-order-to-clientify.server";
-import { logOrderSync, logSyncError } from "../services/sync-logger.server";
-import { createWebhookLog, markWebhookAsProcessed, markWebhookAsError } from "../services/webhook-logger.server";
+import { syncShopifyOrderToClientify } from "../services/clientify/sync-order-to-clientify.server";
+import { logOrderSync, logSyncError } from "../services/logging/sync-logger.server";
+import { createWebhookLog, markWebhookAsProcessed, markWebhookAsError } from "../services/logging/webhook-logger.server";
 import logger from "../utils/logger.server";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
