@@ -48,7 +48,8 @@ export async function syncShopifyOrderToClientify(
         order.customer.id.toString(),
         contactId,
         contactData,
-        { id: contactId, ...contactData } // responseData con el ID devuelto
+        { id: contactId, ...contactData }, // responseData con el ID devuelto
+        order.id?.toString() // parentOrderId
       );
     }
 
@@ -80,7 +81,8 @@ export async function syncShopifyOrderToClientify(
             lineItem.variant_id.toString(),
             productId,
             { sku: lineItem.sku, name: lineItem.title },
-            syncedProduct // responseData completo del producto
+            syncedProduct, // responseData completo del producto
+            order.id?.toString() // parentOrderId
           );
         }
       }
@@ -100,7 +102,8 @@ export async function syncShopifyOrderToClientify(
         order.id.toString(),
         dealId,
         dealData,
-        { id: dealId, ...dealData } // responseData con el ID devuelto
+        { id: dealId, ...dealData }, // responseData con el ID devuelto
+        order.id.toString() // parentOrderId
       );
     }
 

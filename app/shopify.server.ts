@@ -46,11 +46,21 @@ const shopify = shopifyApp({
       if (!shopRecord) {
         console.log('📦 Creando nuevo Shop:', shopDomain);
         shopRecord = await prisma.shop.create({
-          data: { domain: shopDomain }
+          data: { domain: shopDomain, active: true }
         });
         console.log('✅ Shop creado con ID:', shopRecord.id);
       } else {
         console.log('✅ Shop encontrado con ID:', shopRecord.id);
+        
+        // Si la tienda existe pero está inactiva, reactivarla (reinstalación)
+        if (!shopRecord.active) {
+          console.log('🔄 Shop inactiva, reactivando...');
+          shopRecord = await prisma.shop.update({
+            where: { id: shopRecord.id },
+            data: { active: true }
+          });
+          console.log('✅ Shop reactivada');
+        }
       }
 
       // Actualizar la sesión con el shopId

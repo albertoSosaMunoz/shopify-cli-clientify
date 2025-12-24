@@ -4,6 +4,7 @@ import { validateWebhookHmac } from "../utils/webhook-validator.server";
 import { syncShopifyOrderToClientify } from "../services/clientify/sync-order-to-clientify.server";
 import logger from "../utils/logger.server";
 import { createWebhookLog, markWebhookAsProcessed, markWebhookAsError } from "../services/logging/webhook-logger.server";
+import { validateShopIsActive } from "../utils/shop-validator.server";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   logger.info("🚀 WEBHOOK UPDATED - Route hit!", new Date().toISOString());
@@ -28,32 +29,16 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     logger.info(`🔄 Received ${topic} webhook for ${shop}`);
     logger.info(`Order #${payload.order_number} - ID: ${payload.id} updated`);
 
-    // Buscar o crear Shop
-    shopRecord = await db.shop.findUnique({
-      where: { domain: shop }
-    });
-
-    if (!shopRecord) {
-      shopRecord = await db.shop.create({
-        data: { domain: shop }
-      });
+    // Validar que la tienda esté activa
+    const validation = await validateShopIsActive(shop, topic, payload.id?.toString(), rawBody);
+    
+    if (!validation) {
+      // Tienda inactiva, ya se registró en webhook log
+      return new Response(null, { status: 200 });
     }
 
-    // Crear log del webhook (siempre, incluso si luego falla)
-    const headers = {};
-    request.headers.forEach((value, key) => {
-      headers[key] = value;
-    });
-
-    const webhookLog = await createWebhookLog({
-      shopId: shopRecord.id,
-      topic,
-      shopifyId: `gid://shopify/Order/${payload.id}`,
-      headers,
-      payload,
-      hmacValid: true, // TODO: validar HMAC
-    });
-    webhookLogId = webhookLog?.id || null;
+    shopRecord = validation.shop;
+    webhookLogId = validation.webhookLogId;
 
     logger.info(`🔄 Received ${topic} webhook for ${shop}`);
     logger.info(`Order #${payload.order_number} - ID: ${payload.id} updated`);

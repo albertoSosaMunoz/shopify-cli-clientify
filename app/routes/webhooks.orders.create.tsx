@@ -5,6 +5,7 @@ import { syncShopifyOrderToClientify } from "../services/clientify/sync-order-to
 import { logOrderSync, logSyncError } from "../services/logging/sync-logger.server";
 import { createWebhookLog, markWebhookAsProcessed, markWebhookAsError } from "../services/logging/webhook-logger.server";
 import logger from "../utils/logger.server";
+import { validateShopIsActive } from "../utils/shop-validator.server";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   logger.info("🚀 WEBHOOK CREATE - Route hit!", { timestamp: new Date().toISOString() });
@@ -29,34 +30,16 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     logger.info(`✅ Received ${topic} webhook for ${shop}`);
     logger.info(`Order #${payload.order_number} - ID: ${payload.id}`);
 
-    // Buscar o crear Shop
-    shopRecord = await db.shop.findUnique({
-      where: { domain: shop }
-    });
-
-    if (!shopRecord) {
-      shopRecord = await db.shop.create({
-        data: { domain: shop }
-      });
-      logger.info(`📦 Created new shop record for ${shop}`);
+    // Validar que la tienda esté activa
+    const validation = await validateShopIsActive(shop, topic, payload.id?.toString(), rawBody);
+    
+    if (!validation) {
+      // Tienda inactiva, ya se registró en webhook log
+      return new Response(null, { status: 200 });
     }
 
-    // Registrar webhook recibido (siempre, incluso si luego falla)
-    const webhookLog = await createWebhookLog({
-      shopId: shopRecord.id,
-      topic,
-      shopifyId: payload.id?.toString(),
-      headers: {
-        "x-shopify-topic": topic,
-        "x-shopify-shop-domain": shop,
-        "x-shopify-hmac-sha256": hmac,
-        "x-shopify-api-version": request.headers.get("x-shopify-api-version"),
-      },
-      payload: rawBody,
-      hmacValid: true,
-      processed: false,
-    });
-    webhookLogId = webhookLog?.id || null;
+    shopRecord = validation.shop;
+    webhookLogId = validation.webhookLogId;
 
     // Guardar o actualizar pedido en BD
     await db.order.upsert({

@@ -16,6 +16,7 @@ datasource db {
 model Shop {
   id        Int       @id @default(autoincrement())
   domain    String    @unique // integra-clientify.myshopify.com
+  active    Boolean   @default(true) // Si la app está instalada y activa
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   
@@ -96,6 +97,7 @@ model SyncLog {
   syncType      SyncType // Tipo de objeto sincronizado
   shopifyId     String   // ID del objeto en Shopify
   clientifyId   Int?     // ID resultante en Clientify (null si error)
+  parentOrderId String?  // ID de la orden padre si esta sync pertenece a una orden
   status        SyncStatus // Estado de la sincronización
   errorMessage  String?  @db.Text // Mensaje de error si aplica
   requestData   String?  @db.LongText // JSON del request (opcional)
@@ -109,6 +111,7 @@ model SyncLog {
   @@index([syncType])
   @@index([status])
   @@index([createdAt])
+  @@index([parentOrderId])
 }
 
 enum SyncType {

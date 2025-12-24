@@ -14,6 +14,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const skip = (page - 1) * limit;
   const syncType = url.searchParams.get("type") || "all";
   const status = url.searchParams.get("status") || "all";
+  const orderSearch = url.searchParams.get("orderSearch") || "";
 
   // Buscar o crear shop
   let shop = await prisma.shop.findUnique({
@@ -33,6 +34,13 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   }
   if (status !== "all") {
     where.status = status;
+  }
+  // Filtro por Order ID: busca registros donde shopifyId o parentOrderId coincidan
+  if (orderSearch) {
+    where.OR = [
+      { shopifyId: { contains: orderSearch } },
+      { parentOrderId: { contains: orderSearch } }
+    ];
   }
 
   // Obtener logs con paginación
@@ -60,7 +68,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     limit,
     shop: session.shop,
     stats,
-    filters: { syncType, status },
+    filters: { syncType, status, orderSearch },
   };
 };
 
@@ -110,6 +118,17 @@ export default function SyncLogs() {
               <s-text variant="bodySm" as="span" style={{ color: "#d72c0d" }}>Errores: <strong>{totalErrors}</strong></s-text>
             </s-inline-stack>
             <s-inline-stack gap="100" blockAlign="center">
+              <input
+                type="text"
+                placeholder="Buscar Order ID..."
+                defaultValue={filters?.orderSearch || ""}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleFilterChange("orderSearch", e.currentTarget.value);
+                  }
+                }}
+                style={{ padding: "3px 8px", fontSize: "12px", borderRadius: "4px", border: "1px solid #d1d5db", minWidth: "150px" }}
+              />
               <select
                 value={filters?.syncType || "all"}
                 onChange={(e) => handleFilterChange("type", e.target.value)}
@@ -177,6 +196,7 @@ export default function SyncLogs() {
                   <th style={{ padding: "6px 8px", textAlign: "left", fontWeight: 600 }}>Tipo</th>
                   <th style={{ padding: "6px 8px", textAlign: "left", fontWeight: 600 }}>Shopify ID</th>
                   <th style={{ padding: "6px 8px", textAlign: "left", fontWeight: 600 }}>Clientify ID</th>
+                  <th style={{ padding: "6px 8px", textAlign: "left", fontWeight: 600 }}>Parent Order</th>
                   <th style={{ padding: "6px 8px", textAlign: "left", fontWeight: 600 }}>Estado</th>
                   <th style={{ padding: "6px 8px", textAlign: "left", fontWeight: 600 }}>Error</th>
                 </tr>
@@ -209,6 +229,9 @@ export default function SyncLogs() {
                     </td>
                     <td style={{ padding: "6px 8px", fontSize: "11px", fontFamily: "monospace", color: "#666" }}>
                       {log.clientifyId || "-"}
+                    </td>
+                    <td style={{ padding: "6px 8px", fontSize: "11px", fontFamily: "monospace", color: "#999" }}>
+                      {log.parentOrderId || "-"}
                     </td>
                     <td style={{ padding: "6px 8px" }}>
                       <span style={{
@@ -289,6 +312,9 @@ export default function SyncLogs() {
               <div><strong>Tipo:</strong> {selectedLog.syncType}</div>
               <div><strong>Shopify ID:</strong> <code style={{ fontSize: "11px", background: "#f6f6f7", padding: "2px 4px", borderRadius: "3px" }}>{selectedLog.shopifyId}</code></div>
               <div><strong>Clientify ID:</strong> {selectedLog.clientifyId || "N/A"}</div>
+              {selectedLog.parentOrderId && (
+                <div><strong>Parent Order ID:</strong> <code style={{ fontSize: "11px", background: "#f6f6f7", padding: "2px 4px", borderRadius: "3px" }}>{selectedLog.parentOrderId}</code></div>
+              )}
               <div>
                 <strong>Estado:</strong>{" "}
                 <span style={{
