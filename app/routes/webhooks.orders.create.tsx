@@ -18,7 +18,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   try {
     // Obtener el body del webhook
     rawBody = await request.text();
-    logger.debug("📦 Body length:", rawBody.length);
     
     // Obtener datos del webhook
     const shop = request.headers.get("x-shopify-shop-domain") || "unknown";
@@ -31,7 +30,11 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     logger.info(`Order #${payload.order_number} - ID: ${payload.id}`);
 
     // Validar que la tienda esté activa
-    const validation = await validateShopIsActive(shop, topic, payload.id?.toString(), rawBody);
+    const validation = await validateShopIsActive(shop, topic, payload.id?.toString(), rawBody, {
+      "x-shopify-topic": topic,
+      "x-shopify-shop-domain": shop,
+      "x-shopify-hmac-sha256": hmac,
+    });
     
     if (!validation) {
       // Tienda inactiva, ya se registró en webhook log

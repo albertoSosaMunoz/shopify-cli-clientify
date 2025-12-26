@@ -1,6 +1,7 @@
 import db from "../db.server";
 import logger from "./logger.server";
 import { createWebhookLog } from "../services/logging/webhook-logger.server";
+import { validateWebhookHmac } from "./webhook-validator.server";
 
 /**
  * Valida que una tienda esté activa antes de procesar webhooks
@@ -8,14 +9,25 @@ import { createWebhookLog } from "../services/logging/webhook-logger.server";
  * @param topic Tópico del webhook
  * @param shopifyId ID del objeto en Shopify
  * @param payload Payload del webhook
+ * @param headers Headers del webhook
+ * @param rawBody Body raw para validar HMAC
  * @returns El registro de Shop si está activa, null si está inactiva
  */
 export async function validateShopIsActive(
   shopDomain: string,
   topic: string,
   shopifyId: string | undefined,
-  payload: any
+  rawBody: string,
+  headers?: Record<string, string | null>
 ): Promise<{ shop: any; webhookLogId: number | null } | null> {
+  // Validar HMAC
+  const hmac = headers?.["x-shopify-hmac-sha256"] || null;
+  const hmacValid = validateWebhookHmac(rawBody, hmac);
+  
+  if (!hmacValid) {
+    logger.error(`❌ HMAC validation failed for ${topic} from ${shopDomain}`);
+    // Aún así registramos el webhook para auditoría
+  }
   // Buscar o crear Shop
   let shopRecord = await db.shop.findUnique({
     where: { domain: shopDomain }
@@ -40,11 +52,17 @@ export async function validateShopIsActive(
     shopId: shopRecord.id,
     topic,
     shopifyId,
-    headers: {},
-    payload,
-    hmacValid: true,
+    headers: headers || {},
+    payload: rawBody,
+    hmacValid,
   });
 
+  // Si el HMAC no es válido, rechazar el webhook
+  if (!hmacValid) {
+    logger.error(`🚫 Webhook rejected due to invalid HMAC: ${topic} from ${shopDomain}`);
+    return null;
+  }
+
   // Después de buscar/crear/reactivar, la tienda siempre estará activa
-  return { shop: shopRecord, webhookLogId: webhookLog.id };
+  return { shop: shopRecord, webhookLogId: webhookLog?.id || null };
 }
